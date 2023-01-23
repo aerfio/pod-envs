@@ -12,7 +12,6 @@ import (
 
 	"github.com/neilotoole/jsoncolor"
 	"github.com/spf13/pflag"
-	"golang.org/x/exp/maps"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -28,9 +27,9 @@ func main() {
 	var prettyPrint, yamlOut, printHelp bool
 	pflag.StringVar(&namespace, "namespace", "default", "namespace of the pod")
 	pflag.StringVar(&name, "name", "", "namespace of the pod")
-	pflag.StringVarP(&container, "container", "c", "", "container")
-	pflag.BoolVarP(&prettyPrint, "pretty", "p", false, "pretty print output")
-	pflag.BoolVarP(&yamlOut, "yaml", "y", false, "use yaml output")
+	pflag.StringVarP(&container, "container", "c", "", "Container inside that pod from which to extract envs. Unused if there's only 1 container")
+	pflag.BoolVarP(&prettyPrint, "pretty", "p", false, "pretty print output if json")
+	pflag.BoolVarP(&yamlOut, "yaml", "y", false, "switch from json to yaml output")
 	pflag.BoolVarP(&printHelp, "help", "h", false, "print help msg")
 	pflag.Parse()
 
@@ -56,30 +55,22 @@ func main() {
 		os.Exit(1)
 	}
 
-	envs := make(map[string]string)
 	podContainer := findContainerWithName(pod.Spec.Containers, name)
+	envs := make(map[string]string, len(podContainer.Env))
 
 	for _, env := range podContainer.Env {
 		if env.Value != "" {
-			maps.Copy(envs, map[string]string{
-				env.Name: env.Value,
-			})
-			continue
-		}
-		if env.ValueFrom != nil {
+			envs[env.Name] = env.Value
+		} else if env.ValueFrom != nil {
 			store := envutil.NewResourceStore()
 			val, err := envutil.GetEnvVarRefValue(kc, namespace, store, env.ValueFrom, pod, &podContainer)
 			if err != nil {
 				panic(err)
 			}
-			maps.Copy(envs, map[string]string{
-				env.Name: val,
-			})
+			envs[env.Name] = val
+		} else {
+			envs[env.Name] = ""
 		}
-
-		maps.Copy(envs, map[string]string{
-			env.Name: "",
-		})
 	}
 
 	if err := getEncoder(os.Stdout, yamlOut, prettyPrint).Encode(envs); err != nil {
