@@ -7,12 +7,12 @@ import (
 	"os"
 	"strings"
 
+	"aerf.io/podenvs/k8s"
 	"github.com/andreazorzetto/yh/highlight"
 	"gopkg.in/yaml.v3"
 
 	"github.com/neilotoole/jsoncolor"
 	"github.com/spf13/pflag"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
@@ -55,7 +55,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	podContainer := findContainerWithName(pod.Spec.Containers, name)
+	podContainer := k8s.FindContainerWithName(pod.Spec.Containers, name)
 	envs := make(map[string]string, len(podContainer.Env))
 
 	for _, env := range podContainer.Env {
@@ -130,19 +130,4 @@ func getJSONEnc(out io.Writer, pretty bool) *jsoncolor.Encoder {
 		enc = jsoncolor.NewEncoder(os.Stdout)
 	}
 	return enc
-}
-
-func findContainerWithName(containers []corev1.Container, name string) corev1.Container {
-	if len(containers) == 1 {
-		return containers[0]
-	}
-
-	containerNames := make([]string, 0, len(containers))
-	for _, container := range containers {
-		containerNames = append(containerNames, container.Name)
-		if container.Name == name {
-			return container
-		}
-	}
-	panic(fmt.Errorf("there isn't %q container in the pod, list of container names: %+v", name, containerNames))
 }
