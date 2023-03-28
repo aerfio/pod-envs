@@ -1,6 +1,6 @@
-module github.com/aerfio/pod-envs
+module aerf.io/podenvs
 
-go 1.19
+go 1.20
 
 require (
 	github.com/andreazorzetto/yh v0.4.0
@@ -11,7 +11,7 @@ require (
 	k8s.io/apimachinery v0.26.1
 	k8s.io/client-go v0.26.1
 	k8s.io/kubectl v0.26.1
-	sigs.k8s.io/controller-runtime v0.14.1
+	sigs.k8s.io/controller-runtime v0.14.6
 )
 
 require (
