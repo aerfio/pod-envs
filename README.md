@@ -2,7 +2,13 @@
 
 Print envs for specific container inside the particular pod. Extract needed data from secrets, configmaps, fieldRef and resourceFieldRef.
 
-Usage:
+## Installation 
+
+```bash
+go install aerf.io/podenvs@main
+```
+
+## Usage
 ```
 Usage of podenvs:
   -c, --container string   Container inside that pod from which to extract envs. Unused if there's only 1 container

@@ -49,7 +49,7 @@ func main() {
 
 	pod, err := kc.CoreV1().Pods(namespace).Get(context.Background(), name, metav1.GetOptions{})
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to get the pod %s/%s: %s", name, namespace, err)
+		fmt.Fprintf(os.Stderr, "failed to get the pod %s/%s: %s\n", name, namespace, err)
 		os.Exit(1)
 	}
 
@@ -68,7 +68,7 @@ func main() {
 			store := envutil.NewResourceStore()
 			val, err := envutil.GetEnvVarRefValue(kc, namespace, store, env.ValueFrom, pod, &podContainer)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "failed to get envs from ref value: %s", err)
+				fmt.Fprintf(os.Stderr, "failed to get envs from ref value: %s\n", err)
 				os.Exit(1)
 			}
 			envs[env.Name] = val
@@ -78,7 +78,7 @@ func main() {
 	}
 
 	if err := getEncoder(os.Stdout, yamlOut, prettyPrint, printExportableEnvs).Encode(envs); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to print the envs: %s", err)
+		fmt.Fprintf(os.Stderr, "failed to print the envs: %s\n", err)
 		os.Exit(1)
 	}
 }
