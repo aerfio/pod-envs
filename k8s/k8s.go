@@ -6,7 +6,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-func FindContainerWithName(containers []corev1.Container, name string) corev1.Container {
+func MustFindContainerWithName(containers []corev1.Container, name string) corev1.Container {
 	if len(containers) == 1 {
 		return containers[0]
 	}
@@ -18,5 +18,5 @@ func FindContainerWithName(containers []corev1.Container, name string) corev1.Co
 			return container
 		}
 	}
-	panic(fmt.Errorf("there isn't %q container in the pod, list of container names: %+v", name, containerNames))
+	panic(fmt.Errorf("there is no %q container in the pod, list of container names: %+v", name, containerNames))
 }
