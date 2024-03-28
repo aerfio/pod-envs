@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-	"golang.org/x/exp/maps"
-	"gopkg.in/yaml.v3"
 	"io"
-	corev1 "k8s.io/api/core/v1"
 	"os"
 	"slices"
 	"strings"
+
+	"golang.org/x/exp/maps"
+	"gopkg.in/yaml.v3"
+	corev1 "k8s.io/api/core/v1"
 
 	"aerf.io/podenvs/k8s"
 	"github.com/andreazorzetto/yh/highlight"
@@ -40,13 +41,13 @@ func main() {
 		fmt.Fprintf(os.Stderr, `Usage of podenvs:
 This binary connects to the current-context from the kubeconfig to read referenced secrets/configmaps, even if the pod is supplied by stdin.
 
-Available flags: 
+Available flags:
 %s
-"--exportable" flag takes precedence before "--yaml" flag. 
+"--exportable" flag takes precedence before "--yaml" flag.
 "--container" flag is only required if the targeted pod has more than 1 container, otherwise it's ignored.
 You can pass the yaml/json representation of pod to stdin of podenvs using "-" as last argument, example:
   $ kubectl get pod -n $NAMESPACE $POD_NAME -oyaml | podenvs -
-The "--name" flag is not required in this case and is ignored, along with "--namespace" flag. 
+The "--name" flag is not required in this case and is ignored, along with "--namespace" flag.
 `, pflag.CommandLine.FlagUsages())
 		os.Exit(0)
 	}
@@ -77,7 +78,7 @@ The "--name" flag is not required in this case and is ignored, along with "--nam
 		os.Exit(1)
 	}
 
-	podContainer := k8s.MustFindContainerWithName(pod.Spec.Containers, name)
+	podContainer := k8s.MustFindContainerWithName(pod.Spec.Containers, container)
 	envs := make(map[string]string, len(podContainer.Env))
 
 	for _, env := range podContainer.Env {
