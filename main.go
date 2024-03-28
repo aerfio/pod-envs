@@ -85,7 +85,7 @@ The "--name" flag is not required in this case and is ignored, along with "--nam
 		if env.Value != "" {
 			envs[env.Name] = env.Value
 		} else if env.ValueFrom != nil {
-			val, err := envutil.GetEnvVarRefValue(kc, namespace, envutil.NewResourceStore(), env.ValueFrom, pod, &podContainer)
+			val, err := envutil.GetEnvVarRefValue(kc, pod.Namespace, envutil.NewResourceStore(), env.ValueFrom, pod, &podContainer)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "failed to get envs from ref value: %s\n", err)
 				os.Exit(1)
